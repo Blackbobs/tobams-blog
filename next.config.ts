@@ -9,7 +9,11 @@ const nextConfig: NextConfig = {
         hostname: 'media2.dev.to',
       },
     ],
-  },   
+  },  
+  compiler: {
+    // Add your SWC options here
+    styledComponents: true, // Example: Enable styled-components
+  },
 };
 
 export default nextConfig;

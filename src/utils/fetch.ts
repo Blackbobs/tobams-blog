@@ -15,5 +15,7 @@ export const fetchArticleById = async (id: string) => {
     const response = await axiosConfig.get(`/api/articles/${id}`);
     const { data } = response;
     return data;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 };
