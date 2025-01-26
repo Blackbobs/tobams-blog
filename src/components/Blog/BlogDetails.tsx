@@ -90,14 +90,10 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ id }) => {
           More articles
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {randomArticles.map((randomArticle) => (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {randomArticles.map((randomArticle) => (
               <ArticleCard key={randomArticle.id} article={randomArticle} />
             ))}
           </div>
-          ))}
-        </div>
       </div>
 
       {/* Explore More Button */}
