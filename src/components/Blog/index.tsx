@@ -1,7 +1,7 @@
 'use client';
 import useArticleStore from '@/store/useArticleStore';
 import debounce from 'lodash.debounce';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { IoChevronDownOutline, IoSearch } from 'react-icons/io5';
 import ArticleCard from '../Article/ArticleCard';
 import Skeleton from 'react-loading-skeleton';
@@ -18,6 +18,14 @@ const Blog = () => {
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
+
+  // Debounced search handler
+  const handleSearch = useCallback(
+    debounce((input: string) => {
+      setSearchInput(input);
+    }, 300),
+    []
+  );
 
   // Filter and search logic
   const filteredArticles = articles.filter((article) => {
@@ -62,8 +70,8 @@ const Blog = () => {
             type="text"
             className="focus:outline-none border-none text-[#696969] leading-6"
             placeholder="Search"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
+            defaultValue={searchInput}
+            onChange={(e) => handleSearch(e.target.value)}
           />
           <IoSearch size={25} />
         </div>
