@@ -8,6 +8,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import useArticleStore from '@/store/useArticleStore'; // Import your article store
 import Link from 'next/link'; // For the "Explore More" button
+import ArticleCard from '../Article/ArticleCard';
 
 interface BlogDetailsProps {
   id: string;
@@ -90,29 +91,11 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ id }) => {
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {randomArticles.map((randomArticle) => (
-            <div key={randomArticle.id} className="border p-4 rounded-lg">
-              {randomArticle.cover_image && (
-                <Image
-                  src={randomArticle.cover_image}
-                  alt={randomArticle.title}
-                  width={300}
-                  height={200}
-                  className="w-full h-auto mb-4"
-                />
-              )}
-              <h5 className="text-[#151515] font-semibold text-[16px] mb-2">
-                {randomArticle.title}
-              </h5>
-              <p className="text-[#696969] text-[14px]">
-                {randomArticle.description}
-              </p>
-              <Link
-                href={`/blog/${randomArticle.id}`}
-                className="text-blue-500 mt-2 inline-block"
-              >
-                Read More
-              </Link>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {randomArticles.map((randomArticle) => (
+              <ArticleCard key={randomArticle.id} article={randomArticle} />
+            ))}
+          </div>
           ))}
         </div>
       </div>
