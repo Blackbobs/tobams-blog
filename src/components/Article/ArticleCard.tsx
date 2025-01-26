@@ -1,4 +1,5 @@
 import { Article } from "@/types/Articles";
+import { convertDate } from "@/utils/convertDate";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -10,6 +11,7 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
+  const date = convertDate(article?.published_at)
   if (!article) {
     return (
       <article className="flex flex-col items-center my-5 relative px-3 max-w-[400px]">
@@ -60,7 +62,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
         </p>
         <div className="flex itcen justify-between w-full">
           <span className="text-[#6C757D] text-[16px] font-normal leading-[30px] flex items-center gap-1">
-            30th March, 2023{" "}
+            {date}{" "}
             <span className="hidden md:block">| 3 mins read</span>
           </span>
           <Link

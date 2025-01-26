@@ -6,15 +6,15 @@ interface ArticleStore {
   articles: Article[];
   loading: boolean;
   error: string | null;
-  lastFetched: number | null; // Timestamp of the last fetch
+  lastFetched: number | null; 
   fetchArticles: () => Promise<void>;
 }
 
 const useArticleStore = create<ArticleStore>((set, get) => ({
-  articles: [], // Initial state
-  loading: false, // Loading state
-  error: null, // Error state
-  lastFetched: null, // Timestamp of the last fetch
+  articles: [], 
+  loading: false, 
+  error: null, 
+  lastFetched: null,
 
   // Action to fetch articles
   fetchArticles: async () => {
@@ -25,17 +25,17 @@ const useArticleStore = create<ArticleStore>((set, get) => ({
       return; // Exit if data is still fresh
     }
 
-    set({ loading: true, error: null }); // Set loading state
+    set({ loading: true, error: null }); 
 
     try {
       const response = await axiosConfig.get("/api/articles");
       set({
         articles: response.data,
         loading: false,
-        lastFetched: Date.now(), // Update the last fetch timestamp
+        lastFetched: Date.now(), 
       });
     } catch (error) {
-      set({ error: "Failed to fetch articles", loading: false }); // Set error state
+      set({ error: "Failed to fetch articles", loading: false }); 
       console.error("Error fetching articles:", error);
     }
   },
