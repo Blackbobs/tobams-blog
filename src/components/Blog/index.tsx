@@ -10,34 +10,38 @@ import 'react-loading-skeleton/dist/skeleton.css';
 const Blog = () => {
   const { articles, loading, error, fetchArticles } = useArticleStore();
   const [searchInput, setSearchInput] = useState('');
-  const [filteredArticles, setFilteredArticles] = useState(articles);
-  const [isFilterOpen, setIsFilterOpen] = useState(false); 
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('All posts');
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 6;
 
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
 
+  // Filter and search logic
+  const filteredArticles = articles.filter((article) => {
+    const matchesSearch =
+      article.title.toLowerCase().includes(searchInput.toLowerCase()) ||
+      article.description.toLowerCase().includes(searchInput.toLowerCase());
+
+    const matchesFilter =
+      selectedFilter === 'All posts' || article.tag_list.includes(selectedFilter);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  // Paginate the filtered articles
+  const paginatedArticles = filteredArticles.slice(0, currentPage * articlesPerPage);
+
+  // Reset pagination when search or filter changes
   useEffect(() => {
-    const debouncedFilter = debounce(() => {
-      const filtered = articles.filter((article) => {
-        const matchesSearch =
-          article.title.toLowerCase().includes(searchInput.toLowerCase()) ||
-          article.description.toLowerCase().includes(searchInput.toLowerCase());
+    setCurrentPage(1);
+  }, [searchInput, selectedFilter]);
 
-        const matchesFilter =
-          selectedFilter === 'All posts' || article.tag_list.includes(selectedFilter);
-
-        return matchesSearch && matchesFilter;
-      });
-      setFilteredArticles(filtered);
-    }, 300); 
-
-    debouncedFilter();
-
-    // Cleanup debounce on unmount
-    return () => debouncedFilter.cancel();
-  }, [searchInput, articles, selectedFilter]);
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   if (error) {
     return <div>{error}</div>;
@@ -134,20 +138,31 @@ const Blog = () => {
           // Show skeleton loader while loading
           Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="max-w-[400px] w-full">
-              <Skeleton height={200} className="mb-4" /> 
+              <Skeleton height={200} className="mb-4" />
               <Skeleton height={20} width={100} className="mb-2" />
-              <Skeleton height={30} className="mb-2" /> 
-              <Skeleton height={60} className="mb-2" /> 
-              <Skeleton height={20} width={150} className="mb-2" /> 
+              <Skeleton height={30} className="mb-2" />
+              <Skeleton height={60} className="mb-2" />
+              <Skeleton height={20} width={150} className="mb-2" />
             </div>
           ))
         ) : (
-          // Show filtered articles when data is loaded
-          filteredArticles.map((article) => (
+          // Show paginated articles when data is loaded
+          paginatedArticles.map((article) => (
             <ArticleCard key={article.id} article={article} />
           ))
         )}
       </div>
+
+      {!loading && paginatedArticles.length < filteredArticles.length && (
+        <div className="flex justify-center my-5">
+          <button
+            onClick={handleLoadMore}
+            className="bg-[#F9F9F9] text-primary border border-primary rounded px-4 py-2 rounded"
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </section>
   );
 };

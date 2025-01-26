@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
 import { convertDate } from '@/utils/convertDate';
 import Image from 'next/image';
-import Skeleton from 'react-loading-skeleton'; 
-import 'react-loading-skeleton/dist/skeleton.css'; 
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import useArticleStore from '@/store/useArticleStore'; // Import your article store
+import Link from 'next/link'; // For the "Explore More" button
 
 interface BlogDetailsProps {
   id: string;
@@ -17,19 +19,32 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ id }) => {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['article', id], 
+    queryKey: ['article', id],
     queryFn: () => fetchArticleById(id),
   });
+
+  // Fetch all articles from the store
+  const { articles } = useArticleStore();
+
+  // Filter out the current article and select 3 random articles
+  const getRandomArticles = () => {
+    if (!article || !articles.length) return [];
+    const otherArticles = articles.filter((a) => a.id !== article.id); // Exclude current article
+    const shuffled = otherArticles.sort(() => 0.5 - Math.random()); // Shuffle the array
+    return shuffled.slice(0, 3); // Get the first 3 random articles
+  };
+
+  const randomArticles = getRandomArticles();
 
   const date = convertDate(article?.published_at);
 
   if (isLoading) {
     return (
       <article className="w-full h-full px-[3%]">
-        <Skeleton height={30} width={100} className="mb-4" /> 
-        <Skeleton height={40} className="mb-2" /> 
-        <Skeleton height={20} width={150} className="mb-4" /> 
-        <Skeleton height={300} className="mb-4" /> 
+        <Skeleton height={30} width={100} className="mb-4" />
+        <Skeleton height={40} className="mb-2" />
+        <Skeleton height={20} width={150} className="mb-4" />
+        <Skeleton height={300} className="mb-4" />
         <Skeleton count={5} />
       </article>
     );
@@ -66,6 +81,50 @@ const BlogDetails: React.FC<BlogDetailsProps> = ({ id }) => {
       </div>
       <div className="my-5 w-full">
         <ReactMarkdown>{article?.body_markdown}</ReactMarkdown>
+      </div>
+
+      {/* Display 3 Random Articles */}
+      <div className="mt-10">
+        <h4 className="text-primary text-center font-semibold text-[20px] mb-5">
+          More articles
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {randomArticles.map((randomArticle) => (
+            <div key={randomArticle.id} className="border p-4 rounded-lg">
+              {randomArticle.cover_image && (
+                <Image
+                  src={randomArticle.cover_image}
+                  alt={randomArticle.title}
+                  width={300}
+                  height={200}
+                  className="w-full h-auto mb-4"
+                />
+              )}
+              <h5 className="text-[#151515] font-semibold text-[16px] mb-2">
+                {randomArticle.title}
+              </h5>
+              <p className="text-[#696969] text-[14px]">
+                {randomArticle.description}
+              </p>
+              <Link
+                href={`/blog/${randomArticle.id}`}
+                className="text-blue-500 mt-2 inline-block"
+              >
+                Read More
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Explore More Button */}
+      <div className="flex justify-center mt-10">
+        <Link
+          href="/" // Link to your blog listing page
+          className="bg-[#F9F9F9] text-primary border border-primary rounded px-4 py-2 rounded"
+        >
+          Explore More
+        </Link>
       </div>
     </article>
   );
